@@ -50,7 +50,7 @@ Binaries/*
 Plugins/**/Binaries/*
 
 # Except for the specific binaries you want to include
-!Plugins/MP_Aptos/Source/ThirdParty/AptosSDK/Binaries/
+!Plugins/**/ThirdParty/AptosSDK/Binaries/
 
 # Builds
 Build/*
