@@ -5,8 +5,8 @@
 #include <thread>
 #include <chrono>
 
-//void* AptosWrapper::AptosUILogicLibraryHandle = nullptr;
 void* AptosWrapper::ControllerInstance = nullptr;
+FString AptosWrapper::MnemonicKey;
 
 // Function pointer types for DLL exports
 typedef void* (*CreateUiControllerFunc)();
@@ -50,17 +50,6 @@ static CreateNTFFunc CreateNTFFuncPtr = nullptr;
 
 bool AptosWrapper::InitSDK()
 {
-    //if (AptosUILogicLibraryHandle)
-    //    UE_LOG(LogTemp, Error, TEXT("MP_Aptos Sucess to load AptosUILogic.dll"));
-    //    return true;
-
-    //AptosUILogicLibraryHandle = FPlatformProcess::GetDllHandle(TEXT("AptosUILogic.dll"));
-    //if (!AptosUILogicLibraryHandle)
-    //{
-    //    UE_LOG(LogTemp, Error, TEXT("MP_Aptos Failed to load AptosUILogic.dll"));
-    //    return false;
-    //}
-
     // Get the DLL handle from FMP_AptosModule
     void* AptosUILogicLibraryHandle = FMP_AptosModule::Get().GetAptosUILogicLibraryHandle();
     if (!AptosUILogicLibraryHandle)
@@ -69,26 +58,6 @@ bool AptosWrapper::InitSDK()
         return false;
     }
     UE_LOG(LogTemp, Log, TEXT("MP_Aptos Using AptosUILogic.dll handle at %p"), AptosUILogicLibraryHandle);
-
-    // Inline DLL function pointer initialization
-    /*CreateUiControllerFuncPtr = (CreateUiControllerFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_createUiController"));
-    DeleteUiControllerFuncPtr = (DeleteUiControllerFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_deleteUiController"));
-    SetNetworkFuncPtr = (SetNetworkFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_setNetwork"));
-    CreateNewWalletFuncPtr = (CreateNewWalletFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_createNewWallet"));
-    GetMnemonicsKeyFuncPtr = (GetMnemonicsKeyFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_getMnemonicsKey"));
-    GetCurrentWalletBalanceTextFuncPtr = (GetCurrentWalletBalanceTextFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_getCurrentWalletBalanceText"));
-    GetCurrentWalletAddressFuncPtr = (GetCurrentWalletAddressFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_getCurrentWalletAddress"));
-    DeleteStringFuncPtr = (DeleteStringFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_deleteString"));
-    GetWalletAddressFuncPtr = (GetWalletAddressFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_getWalletAddress"));
-    OnWalletListDropdownValueChangedFuncPtr = (OnWalletListDropdownValueChangedFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_onWalletListDropdownValueChanged"));
-    GetPrivateKeyFuncPtr = (GetPrivateKeyFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_getPrivateKey"));
-    AirdropFuncPtr = (AirdropFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_airdrop"));
-    SendTokenFuncPtr = (SendTokenFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_sendToken"));
-    CreateCollectionFuncPtr = (CreateCollectionFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_createCollection"));
-    CreateNTFFuncPtr = (CreateNTFFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_createNFT"));
-    RestoreWalletFuncPtr = (RestoreWalletFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_restoreWallet"));
-    DeleteStringArrayFuncPtr = (DeleteStringArrayFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_deleteStringArray"));
-    InitWalletFromCacheFuncPtr = (InitWalletFromCacheFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_initWalletFromCache"));*/
 
     // Inline DLL function pointer initialization with detailed logging
     CreateUiControllerFuncPtr = (CreateUiControllerFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_createUiController"));
@@ -142,9 +111,6 @@ bool AptosWrapper::InitSDK()
     DeleteStringArrayFuncPtr = (DeleteStringArrayFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_deleteStringArray"));
     if (!DeleteStringArrayFuncPtr) UE_LOG(LogTemp, Error, TEXT("MP_Aptos Failed to load AptosUILogic_deleteStringArray"));
 
-    /*InitWalletFromCacheFuncPtr = (InitWalletFromCacheFunc)FPlatformProcess::GetDllExport(AptosUILogicLibraryHandle, TEXT("AptosUILogic_initWalletFromCache"));
-    if (!InitWalletFromCacheFuncPtr) UE_LOG(LogTemp, Error, TEXT("MP_Aptos Failed to load AptosUILogic_initWalletFromCache"));*/
-
     if (!CreateUiControllerFuncPtr || !DeleteUiControllerFuncPtr || !SetNetworkFuncPtr || !CreateNewWalletFuncPtr ||
         !GetMnemonicsKeyFuncPtr || !GetCurrentWalletBalanceTextFuncPtr || !GetCurrentWalletAddressFuncPtr ||
         !DeleteStringFuncPtr || !GetWalletAddressFuncPtr || !OnWalletListDropdownValueChangedFuncPtr ||
@@ -165,6 +131,8 @@ bool AptosWrapper::InitSDK()
         AptosUILogicLibraryHandle = nullptr;
         return false;
     }
+
+
 
     SetNetworkFuncPtr(ControllerInstance, "https://fullnode.devnet.aptoslabs.com/v1");
     UE_LOG(LogTemp, Log, TEXT("MP_Aptos Aptos SDK Initialized"));
@@ -226,19 +194,68 @@ bool AptosWrapper::CreateNewWallet(void* controller)
     return result;
 }
 
-//bool AptosWrapper::InitWalletFromCache(void* controller, const char* mnemonicsKey, int currentAddressIndexKey)
-//{
-//    return InitWalletFromCacheFuncPtr ? InitWalletFromCacheFuncPtr(controller, mnemonicsKey, currentAddressIndexKey) : false;
-//}
-
 bool AptosWrapper::RestoreWallet(void* controller, const char* mnemonicsKey)
 {
-    return RestoreWalletFuncPtr ? RestoreWalletFuncPtr(controller, mnemonicsKey) : false;
+    if (!RestoreWalletFuncPtr)
+    {
+        UE_LOG(LogTemp, Error, TEXT("AptosWrapper::RestoreWallet: RestoreWalletFuncPtr is null"));
+        return false;
+    }
+    if (RestoreWalletFuncPtr(controller, mnemonicsKey))
+    {
+        UE_LOG(LogTemp, Error, TEXT("AptosWrapper::RestoreWallet: is working"));
+        return true;
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("AptosWrapper::RestoreWallet: is not working"));
+        return false;
+    }
 }
 
 char* AptosWrapper::GetMnemonicsKey(void* controller)
 {
-    return GetMnemonicsKeyFuncPtr ? GetMnemonicsKeyFuncPtr(controller) : nullptr;
+     //If we already have a cached mnemonic key, return it
+    //if (!MnemonicKey.IsEmpty())
+    //{
+    //    return TCHAR_TO_UTF8(*MnemonicKey);
+    //}
+    //// Try to load from file first
+    //FString SavePath = FPaths::ProjectSavedDir() / TEXT("SaveData.json");
+    //FString LoadedData;
+    //if (FFileHelper::LoadFileToString(LoadedData, *SavePath))
+    //{
+    //    MnemonicKey = LoadedData;
+    //    UE_LOG(LogTemp, Log, TEXT("AptosWrapper::GetMnemonicsKey: Loaded mnemonic key from file: %s"), *MnemonicKey);
+    //    return TCHAR_TO_UTF8(*MnemonicKey);
+    //}
+
+     //If not found in file, get from SDK
+    if (!GetMnemonicsKeyFuncPtr)
+    {
+        UE_LOG(LogTemp, Error, TEXT("AptosWrapper::GetMnemonicsKey: GetMnemonicsKeyFuncPtr is null"));
+        return nullptr;
+    }
+
+    char* Mnemonic = GetMnemonicsKeyFuncPtr(controller);
+    if (Mnemonic)
+    {
+        MnemonicKey = UTF8_TO_TCHAR(Mnemonic);
+        UE_LOG(LogTemp, Log, TEXT("AptosWrapper::GetMnemonicsKey: Fetched mnemonic key from SDK: %s"), *MnemonicKey);
+    }
+    return Mnemonic;
+
+    //return GetMnemonicsKeyFuncPtr ? GetMnemonicsKeyFuncPtr(controller) : nullptr;
+}
+
+void AptosWrapper::SaveMnemonicsKey(void* controller)
+{
+    char* mnemonic = GetMnemonicsKey(controller);
+    FString SaveData = mnemonic;
+
+    DeleteString(mnemonic);
+    FString SavePath = FPaths::ProjectSavedDir() / TEXT("SaveData.json");
+    FFileHelper::SaveStringToFile(SaveData, *SavePath);
 }
 
 char* AptosWrapper::GetPrivateKey(void* controller)

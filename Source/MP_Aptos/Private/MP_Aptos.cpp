@@ -29,7 +29,6 @@ void FMP_AptosModule::StartupModule()
 
 	// Load Aptos.dll
 	AptosLibraryHandle = FPlatformProcess::GetDllHandle(*AptosLibraryPath);
-	//AptosLibraryHandle = !AptosLibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*AptosLibraryPath) : nullptr;
 	if (AptosLibraryHandle)
 	{
 		UE_LOG(LogTemp, Log, TEXT("MP_Aptos Successfully loaded Aptos.dll"));
@@ -41,7 +40,6 @@ void FMP_AptosModule::StartupModule()
 
 	// Load AptosUILogic.dll
 	AptosUILogicLibraryHandle = FPlatformProcess::GetDllHandle(*AptosUILogicLibraryPath);
-	//AptosUILogicLibraryHandle = !AptosUILogicLibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*AptosUILogicLibraryPath) : nullptr;
 	if (AptosUILogicLibraryHandle)
 	{
 		UE_LOG(LogTemp, Log, TEXT("MP_Aptos Successfully loaded AptosUILogic.dll"));

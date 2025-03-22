@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+
 #define BOOST_NO_CXX98_FUNCTION_BASE
-#include "CoreMinimal.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
 #ifdef __GNUC__ 
 	#pragma GCC diagnostic ignored "-Wall"
 	#pragma GCC diagnostic ignored "-Wdeprecated-builtins"
@@ -17,10 +16,12 @@
 #undef verify
 #endif
 
-//#include "AptosControllerlogic.h"
 #ifdef __GNUC__ 
 	#pragma GCC diagnostic pop
 #endif
+
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include <string>
 #include "AptosController.generated.h"
 
@@ -53,6 +54,14 @@ class MP_APTOS_API  UAptosController : public UBlueprintFunctionLibrary
 	static void CreateCollection(FString collectionName, FString collectionDescription, FString collectionUrl, bool &IsCreateCollectionOk, FString &Notification);
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnCreateNFT Clicked"), Category = "AptosController")
 	static void CreateNFT(FString collectionName, FString tokenName, FString tokenDescription, int supply, int max, FString url, int royaltyPointsPerMillion, bool &IsCreateNFTOk, FString &Notification);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "GetCurrentWalletBalance"), Category = "AptosController")
+	static void GetCurrentWalletBalance(FString &Balance);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetNetwork"), Category = "AptosController")
+	static void SetNetwork(FString Network);
+
+public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnInitApp"), Category = "AptosController")
 	static void OnInitApp(FString &mnemonic_key);
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "OnQuitApp"), Category = "AptosController")
