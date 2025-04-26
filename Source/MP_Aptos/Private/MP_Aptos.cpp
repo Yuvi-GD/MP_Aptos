@@ -6,7 +6,6 @@
 #include "Interfaces/IPluginManager.h"
 #include "Misc/Paths.h"
 #include "HAL/PlatformProcess.h"
-#include "MP_AptosLibrary/ExampleLibrary.h"
 #include "AptosWrapper.h"
 
 #define LOCTEXT_NAMESPACE "FMP_AptosModule"

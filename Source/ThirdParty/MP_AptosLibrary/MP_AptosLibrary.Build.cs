@@ -13,18 +13,18 @@ public class MP_AptosLibrary : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			// Add the import library
-			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "x64", "Release", "ExampleLibrary.lib"));
+			//PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "x64", "Release", "ExampleLibrary.lib"));
 
 			// Delay-load the DLL, so we can load it from the right place first
-			PublicDelayLoadDLLs.Add("ExampleLibrary.dll");
+			//PublicDelayLoadDLLs.Add("ExampleLibrary.dll");
 
 			// Ensure that the DLL is staged along with the executable
-			RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/MP_AptosLibrary/Win64/ExampleLibrary.dll");
+			//RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/MP_AptosLibrary/Win64/ExampleLibrary.dll");
 		}
 		else if (Target.Platform == UnrealTargetPlatform.Mac)
 		{
-			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Mac", "Release", "libExampleLibrary.dylib"));
-			RuntimeDependencies.Add("$(PluginDir)/Source/ThirdParty/MP_AptosLibrary/Mac/Release/libExampleLibrary.dylib");
+			//PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Mac", "Release", "libExampleLibrary.dylib"));
+			//RuntimeDependencies.Add("$(PluginDir)/Source/ThirdParty/MP_AptosLibrary/Mac/Release/libExampleLibrary.dylib");
 		}
 		else if (Target.Platform == UnrealTargetPlatform.Linux)
 		{
